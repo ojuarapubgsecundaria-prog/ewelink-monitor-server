@@ -1,0 +1,146 @@
+╔══════════════════════════════════════════════════════════════════╗
+║           eWeLink Monitor — Guia de Configuração Completo       ║
+╚══════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PARTE 1 — CRIAR BOT DO TELEGRAM (GRÁTIS)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Abra o Telegram e pesquise por @BotFather
+2. Clique em START
+3. Digite: /newbot
+4. Dê um nome ao bot (ex: "Meu Monitor eWeLink")
+5. Dê um username ao bot (ex: "meu_ewelink_bot")
+6. O BotFather vai te enviar um TOKEN — anote! 
+   Exemplo: 7123456789:AAHxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+Para descobrir seu Chat ID:
+1. Pesquise @userinfobot no Telegram
+2. Clique em START
+3. Ele vai te enviar seu ID — anote!
+   Exemplo: 123456789
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PARTE 2 — CONFIGURAR TWILIO (CHAMADA TELEFÔNICA)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Acesse https://www.twilio.com e crie uma conta gratuita
+2. Verifique seu número de telefone
+3. No painel, anote:
+   - Account SID (começa com AC...)
+   - Auth Token
+4. Clique em "Get a free phone number" para obter um número Twilio
+5. Anote o número no formato +1XXXXXXXXXX
+
+⚠️ Na conta gratuita do Twilio, só é possível ligar para números verificados.
+   Vá em: https://console.twilio.com/us1/develop/phone-numbers/verified-caller-ids
+   E adicione seu número brasileiro lá.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PARTE 3 — FAZER DEPLOY NO RENDER (SERVIDOR GRATUITO)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Crie uma conta em https://github.com (se não tiver)
+
+2. Crie um repositório novo no GitHub chamado "ewelink-monitor-server"
+
+3. Coloque todos os arquivos da pasta "ewelink-server" nesse repositório
+
+4. Acesse https://render.com e crie uma conta gratuita
+
+5. Clique em "New +" → "Web Service"
+
+6. Conecte com seu GitHub e selecione o repositório
+
+7. Configure assim:
+   - Name: ewelink-monitor-server
+   - Runtime: Node
+   - Build Command: npm install
+   - Start Command: npm start
+   - Plan: Free
+
+8. Em "Environment Variables", adicione:
+   ┌─────────────────────────┬──────────────────────────────────┐
+   │ KEY                     │ VALUE                            │
+   ├─────────────────────────┼──────────────────────────────────┤
+   │ TELEGRAM_BOT_TOKEN      │ (token do BotFather)             │
+   │ TELEGRAM_CHAT_ID        │ (seu chat id)                    │
+   │ TWILIO_ACCOUNT_SID      │ (da conta Twilio)                │
+   │ TWILIO_AUTH_TOKEN       │ (da conta Twilio)                │
+   │ TWILIO_FROM_NUMBER      │ +1XXXXXXXXXX (número Twilio)     │
+   │ TWILIO_TO_NUMBER        │ +55119XXXXXXXX (seu número)      │
+   └─────────────────────────┴──────────────────────────────────┘
+
+9. Clique em "Create Web Service"
+
+10. Aguarde o deploy (2-5 minutos)
+
+11. Anote a URL gerada pelo Render:
+    Exemplo: https://ewelink-monitor-server.onrender.com
+
+12. Adicione mais uma variável de ambiente:
+    SERVER_URL = https://ewelink-monitor-server.onrender.com
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PARTE 4 — CONFIGURAR O APP MOBILE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Abra o arquivo "expo-app-updated/.env" no Bloco de Notas
+
+2. Troque a URL do Replit pela URL do Render:
+   EXPO_PUBLIC_DOMAIN=ewelink-monitor-server.onrender.com
+   (sem https://, só o domínio)
+
+3. Salve o arquivo
+
+4. No CMD, dentro da pasta expo-app-updated, rode:
+   npx expo start
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PARTE 5 — CONFIGURAR APP NO DEV.EWELINK.CC
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Acesse https://dev.ewelink.cc
+
+2. Vá em: Lista de aplicativos → Editar → Chave de autorização
+
+3. No campo "Redirect URL", coloque:
+   https://ewelink-monitor-server.onrender.com/api/ewelink/oauth/callback
+
+4. Salve
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PARTE 6 — USAR O APP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Abra o app no celular pelo Expo Go
+2. Expanda "Configurar App ID e Secret"
+3. Insira seu App ID e App Secret do dev.ewelink.cc
+4. Clique em "Salvar Credenciais"
+5. Clique em "Entrar com eWeLink"
+6. Faça login na página que abrir
+7. O monitoramento inicia automaticamente!
+
+Quando um dispositivo ficar offline:
+✅ Você recebe uma mensagem no Telegram
+✅ Você recebe uma chamada telefônica
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ ATENÇÃO — RENDER GRATUITO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+O plano gratuito do Render "dorme" após 15 minutos sem requisições.
+Isso pode causar atraso de ~30 segundos na primeira requisição.
+
+Para evitar isso (opcional):
+- Assine o plano pago do Render ($7/mês), OU
+- Use um serviço como https://uptimerobot.com para pingar
+  o servidor a cada 5 minutos de graça.
+
+Configuração no UptimeRobot:
+1. Crie conta gratuita em uptimerobot.com
+2. Clique em "Add New Monitor"
+3. Tipo: HTTP(s)
+4. URL: https://ewelink-monitor-server.onrender.com/api/healthz
+5. Intervalo: 5 minutos
+6. Salve — pronto, o servidor nunca vai dormir!
