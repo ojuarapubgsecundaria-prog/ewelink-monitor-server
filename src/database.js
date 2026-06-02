@@ -60,7 +60,13 @@ function upsertDeviceState(deviceId, deviceName, online) {
   const existing = all[deviceId];
 
   if (!existing) {
-    all[deviceId] = { device_id: deviceId, device_name: deviceName, online: online ? 1 : 0, last_seen: now, alert_sent: 0 };
+    all[deviceId] = {
+      device_id: deviceId,
+      device_name: deviceName,
+      online: online ? 1 : 0,
+      last_seen: now,
+      alert_sent: 0,
+    };
     writeJson(DEVICES_FILE, all);
     return { changed: false, wentOffline: false };
   }
@@ -70,14 +76,33 @@ function upsertDeviceState(deviceId, deviceName, online) {
   const changed = wasOnline !== isOnline;
   const wentOffline = changed && !isOnline;
 
-  all[deviceId] = { ...existing, device_name: deviceName, online: isOnline ? 1 : 0, last_seen: now, alert_sent: wentOffline ? 0 : existing.alert_sent };
+  all[deviceId] = {
+    ...existing,
+    device_name: deviceName,
+    online: isOnline ? 1 : 0,
+    last_seen: now,
+    alert_sent: wentOffline ? 0 : existing.alert_sent,
+  };
   writeJson(DEVICES_FILE, all);
   return { changed, wentOffline, wasOnline };
 }
 
 function markAlertSent(deviceId) {
   const all = getAllDeviceStatesRaw();
-  if (all[deviceId]) { all[deviceId].alert_sent = 1; writeJson(DEVICES_FILE, all); }
+  if (all[deviceId]) {
+    all[deviceId].alert_sent = 1;
+    writeJson(DEVICES_FILE, all);
+  }
 }
 
-module.exports = { getSettings, updateSettings, getSession, saveSession, clearSession, getDeviceState, upsertDeviceState, markAlertSent, getAllDeviceStates: () => Object.values(getAllDeviceStatesRaw()) };
+module.exports = {
+  getSettings,
+  updateSettings,
+  getSession,
+  saveSession,
+  clearSession,
+  getDeviceState,
+  upsertDeviceState,
+  markAlertSent,
+  getAllDeviceStates: () => Object.values(getAllDeviceStatesRaw()),
+};
